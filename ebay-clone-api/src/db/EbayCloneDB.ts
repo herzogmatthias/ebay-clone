@@ -1,4 +1,7 @@
+import Bid from "../interfaces/Bid";
+import Product from "../interfaces/Product";
 import UserModel from "../models/User.model";
+import crypto from "crypto";
 
 export const findUser = async (email: string, password: string) => {
   try {
@@ -48,7 +51,72 @@ export const getAllProducts = async () => {
   return products.flat(1);
 };
 
-export const getProductByName = async (name: string, email: string) => {
+export const getProductByName = async (
+  name: string,
+  email: string
+): Promise<Product> => {
   const user = await UserModel.findOne({ email: email });
   return user?.products.filter((product) => product.name === name)[0];
+};
+
+export const deleteProductByName = async (name: string, email: string) => {
+  const user = await UserModel.findOne({ email: email });
+  user?.products.filter((product) => product.name !== name);
+  await user?.save();
+};
+
+export const addBid = async (
+  productName: string,
+  email: string,
+  price: number,
+  supplierEmail: string,
+  date: Date
+) => {
+  const product = await getProductByName(productName, supplierEmail);
+  if (product.startDate > date || product.endDate < date) {
+    throw new Error("Date is not in range");
+  }
+  if (product.price >= price) {
+    throw new Error("Price is not higher than current price");
+  }
+  if (product.email === email) {
+    throw new Error("You can't bid on your own product");
+  }
+  const id = crypto
+    .createHash("sha256")
+    .update(email + productName + price + date.getTime(), "utf-8")
+    .digest("hex");
+  const user = await UserModel.findOne({ email: email });
+  user?.bids.push({
+    id: id,
+    productName: productName,
+    price: price,
+    date: date,
+  });
+
+  await user?.save();
+  return user?.bids[user?.bids.length - 1];
+};
+
+const getAllBids = async (): Promise<Bid[]> => {
+  const users = await UserModel.find();
+  const bids = users.map((user) => user.bids);
+  return bids.flat(1);
+};
+
+export const getAllBidsForProduct = async (
+  supplierEmail: string,
+  productName: string
+) => {
+  const bids = await getAllBids();
+  return bids.filter(
+    (bid) =>
+      bid.productName === productName && bid.supplierEmail === supplierEmail
+  );
+};
+
+export const deleteBidByID = async (id: string, email: string) => {
+  const user = await UserModel.findOne({ email: email });
+  user?.bids.filter((bid) => bid.id !== id);
+  await user?.save();
 };
