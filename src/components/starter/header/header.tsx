@@ -1,32 +1,26 @@
-import { component$ } from '@builder.io/qwik';
-import { QwikLogo } from '../icons/qwik';
-import styles from './header.module.css';
+import { component$ } from "@builder.io/qwik";
 
 export default component$(() => {
   return (
-    <header class={styles.header}>
-      <div class={styles.logo}>
-        <a href="/" title="qwik">
-          <QwikLogo />
+    <div class="navbar bg-base-100">
+      <div class="flex-1">
+        <a href="/" class="btn btn-ghost normal-case text-xl">
+          Ebay-Clone
         </a>
       </div>
-      <ul>
-        <li>
-          <a href="https://qwik.builder.io/docs/components/overview/" target="_blank">
-            Docs
-          </a>
-        </li>
-        <li>
-          <a href="https://qwik.builder.io/examples/introduction/hello-world/" target="_blank">
-            Examples
-          </a>
-        </li>
-        <li>
-          <a href="https://qwik.builder.io/tutorial/welcome/overview/" target="_blank">
-            Tutorials
-          </a>
-        </li>
-      </ul>
-    </header>
+      <div class="flex-none">
+        <ul class="menu menu-horizontal px-1">
+          <li>
+            <a href="/login" target="_self">
+              Login
+            </a>
+          </li>
+
+          <li>
+            <a>Add Product</a>
+          </li>
+        </ul>
+      </div>
+    </div>
   );
 });
