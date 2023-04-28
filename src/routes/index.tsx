@@ -37,8 +37,7 @@ export default component$(() => {
         <div>
           <div class="grid grid-flow-row-dense grid-cols-3 grid-rows-1 ">
               <h1 class="py-15 text-lg">Logged in</h1> 
-              <h3 class=" py-15  text-lg font-bold text-center"> Overview Offers </h3>
-              <button class="py-25  btn btn-active btn-ghost ">calucate Offers</button>
+              <h3 class=" py-15  text-lg font-bold text-center"> Overview Product </h3>
           </div>
           <div class="overflow-x-auto w-full">
                 <table class="table w-full">
@@ -47,6 +46,7 @@ export default component$(() => {
                       <th>Name</th>
                       <th>Descrption</th>
                       <th>Price</th>
+                      <th></th>
                       <th></th>
                     </tr>
                   </thead>
@@ -68,7 +68,10 @@ export default component$(() => {
                       </td>
                       <td>{item.price}</td>
                       <th>
-                        <button class="btn btn-ghost btn-xs">details</button>
+                        <a role="button" class="btn btn-ghost btn-xs" href={'/detailProduct/?name=' + item.name} target="_self">details</a>
+                      </th>
+                      <th>
+                        <button class="btn btn-ghost btn-xs" type="button" >delete</button>
                       </th>
                     </tr>
                      );
