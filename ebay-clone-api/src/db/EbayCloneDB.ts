@@ -1,3 +1,4 @@
+import { get } from "http";
 import Bid from "../interfaces/Bid";
 import Product from "../interfaces/Product";
 import UserModel from "../models/User.model";
@@ -29,6 +30,9 @@ export const insertProductForUser = async (
 ) => {
   const user = await UserModel.findOne({ email: email });
   console.log(user);
+  if (user?.products.find((product) => product.name === name)) {
+    throw new Error("Product already exists");
+  }
   user?.products.push({
     name: name,
     description: description,
@@ -56,12 +60,21 @@ export const getProductByName = async (
   email: string
 ): Promise<Product> => {
   const user = await UserModel.findOne({ email: email });
-  return user?.products.filter((product) => product.name === name)[0];
+  const product = user?.products.filter((product) => product.name === name)[0];
+  product.email = email;
+  return product;
 };
 
 export const deleteProductByName = async (name: string, email: string) => {
+  const users = await UserModel.find();
   const user = await UserModel.findOne({ email: email });
   user?.products.filter((product) => product.name !== name);
+  users.forEach((user) => {
+    user.bids.filter((bid) => bid.productName !== name);
+  });
+  users.forEach((user) => {
+    user.save();
+  });
   await user?.save();
 };
 
@@ -73,10 +86,11 @@ export const addBid = async (
   date: Date
 ) => {
   const product = await getProductByName(productName, supplierEmail);
-  if (product.startDate > date || product.endDate < date) {
+  const lastPrice = await getLastPriceForProduct(productName, supplierEmail);
+  if (new Date(product.startDate) > date || new Date(product.endDate) < date) {
     throw new Error("Date is not in range");
   }
-  if (product.price >= price) {
+  if (product.price >= price || lastPrice >= price) {
     throw new Error("Price is not higher than current price");
   }
   if (product.email === email) {
@@ -90,17 +104,22 @@ export const addBid = async (
   user?.bids.push({
     id: id,
     productName: productName,
+    supplierEmail: supplierEmail,
     price: price,
     date: date,
   });
 
   await user?.save();
-  return user?.bids[user?.bids.length - 1];
+  return { ...user?.bids[user?.bids.length - 1], email: email };
 };
 
 const getAllBids = async (): Promise<Bid[]> => {
   const users = await UserModel.find();
-  const bids = users.map((user) => user.bids);
+  const bids = users.map((user) =>
+    user.bids.map((bid) => {
+      return { ...bid, email: user.email };
+    })
+  );
   return bids.flat(1);
 };
 
@@ -108,15 +127,30 @@ export const getAllBidsForProduct = async (
   supplierEmail: string,
   productName: string
 ) => {
+  console.log(supplierEmail, productName);
   const bids = await getAllBids();
-  return bids.filter(
-    (bid) =>
-      bid.productName === productName && bid.supplierEmail === supplierEmail
-  );
+  console.log(bids);
+  console.log(bids.filter((bid) => bid.productName == productName));
+  return bids
+    .filter((bid) => {
+      return (
+        bid.productName == productName && bid.supplierEmail == supplierEmail
+      );
+    })
+    .sort((a, b) => a.price - b.price);
 };
 
 export const deleteBidByID = async (id: string, email: string) => {
   const user = await UserModel.findOne({ email: email });
   user?.bids.filter((bid) => bid.id !== id);
   await user?.save();
+};
+
+export const getLastPriceForProduct = async (
+  productName: string,
+  supplierEmail: string
+) => {
+  const bids = await getAllBidsForProduct(supplierEmail, productName);
+  const lastBid = bids.sort((a, b) => a.price - b.price)[bids.length - 1];
+  return lastBid ? lastBid.price : 0;
 };

@@ -4,4 +4,5 @@ export default interface Bid {
   supplierEmail: string;
   price: number;
   date: Date;
+  email?: string;
 }

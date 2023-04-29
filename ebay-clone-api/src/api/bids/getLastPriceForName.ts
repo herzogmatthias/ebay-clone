@@ -1,5 +1,5 @@
 import Express, { Request, Response } from "express";
-import { getAllBidsForProduct } from "../../db/EbayCloneDB";
+import { getLastPriceForProduct } from "../../db/EbayCloneDB";
 
 const router = Express.Router({ mergeParams: true });
 
@@ -11,8 +11,8 @@ router.post(
   ) => {
     try {
       const { supplierEmail, productName } = req.body;
-      const bids = await getAllBidsForProduct(supplierEmail, productName);
-      res.json({ bids, success: true });
+      const price = await getLastPriceForProduct(supplierEmail, productName);
+      res.json({ price, success: true });
     } catch (e) {
       res.status(500).json({ error: e, success: false });
     }

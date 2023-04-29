@@ -12,11 +12,11 @@ router.post("/", async (req: Request<{}, Bid>, res: Response) => {
       req.email,
       price,
       supplierEmail,
-      date
+      new Date(date)
     );
     res.json({ bid, success: true });
   } catch (e) {
-    res.status(500).json({ error: e, success: false });
+    res.status(500).json({ error: e.message, success: false });
   }
 });
 

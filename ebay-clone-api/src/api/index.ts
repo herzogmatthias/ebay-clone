@@ -10,6 +10,7 @@ import addBid from "./bids/add";
 import deleteByID from "./bids/deleteByID";
 import getOne from "./products/getOne";
 import deleteByName from "./products/deleteByName";
+import getLastPriceForName from "./bids/getLastPriceForName";
 import { authenticateToken } from "../middlewares";
 
 const router = express.Router();
@@ -30,5 +31,6 @@ router.use("/products/deleteByName/:name", authenticateToken, deleteByName);
 router.use("/bids/getAllForProduct", authenticateToken, getAllForProduct);
 router.use("/bids/add", authenticateToken, addBid);
 router.use("/bids/delete/:id", authenticateToken, deleteByID);
+router.use("/bids/getLastPriceForName", authenticateToken, getLastPriceForName);
 
 export default router;

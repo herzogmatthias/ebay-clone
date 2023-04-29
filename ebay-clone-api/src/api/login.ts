@@ -11,11 +11,15 @@ router.post<LoginRequest, LoginResponse | MessageResponse>(
   "/",
   async (req, res) => {
     const { email, password } = req.body;
-    const user = await findUser(email, password);
-    if (!user) {
-      res.status(401).json({ message: "Invalid email or password" });
-    } else {
-      res.json({ token: generateAccessToken(user.email) });
+    try {
+      const user = await findUser(email, password);
+      if (!user) {
+        res.status(401).json({ message: "Invalid email or password" });
+      } else {
+        res.json({ token: generateAccessToken(user.email) });
+      }
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
   }
 );
