@@ -67,15 +67,17 @@ export const getProductByName = async (
 
 export const deleteProductByName = async (name: string, email: string) => {
   const users = await UserModel.find();
-  const user = await UserModel.findOne({ email: email });
-  user?.products.filter((product) => product.name !== name);
   users.forEach((user) => {
-    user.bids.filter((bid) => bid.productName !== name);
+    user.bids = user.bids.filter((bid) => bid.productName !== name);
+    if (user.email === email) {
+      console.log("here");
+      user.products = user.products.filter((product) => product.name !== name);
+    }
   });
-  users.forEach((user) => {
-    user.save();
-  });
-  await user?.save();
+  for (const user of users) {
+    console.log(user.products);
+    await user.save();
+  }
 };
 
 export const addBid = async (

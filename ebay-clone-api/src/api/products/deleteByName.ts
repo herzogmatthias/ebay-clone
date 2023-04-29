@@ -10,7 +10,7 @@ router.delete("/", async (req: Request<{ name: string }>, res) => {
     await deleteProductByName(name, req.email);
     res.json({ success: true });
   } catch (e) {
-    res.status(500).json({ error: e, success: false });
+    res.status(500).json({ error: e.message, success: false });
   }
 });
 
