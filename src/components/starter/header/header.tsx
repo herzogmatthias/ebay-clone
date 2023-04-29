@@ -17,7 +17,9 @@ export default component$(() => {
           </li>
 
           <li>
-            <a>Add Product</a>
+            <a href="/addProduct" target="_self">
+              Add Product
+            </a>
           </li>
         </ul>
       </div>
