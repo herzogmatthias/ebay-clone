@@ -9,6 +9,8 @@ export interface IIndexStore {
   status: number;
 }
 
+
+
 export default component$(() => {
   const state = useStore<IIndexStore>({
     token: "",
@@ -16,6 +18,8 @@ export default component$(() => {
     message: "",
     status: 200,
   });
+
+  
 
   useVisibleTask$(async () => {
     state.token = localStorage.getItem("token") || "";
@@ -39,6 +43,8 @@ export default component$(() => {
     }
     console.log(data.name);
   });
+
+  
 
   return (
     <>
@@ -92,7 +98,15 @@ export default component$(() => {
                         </a>
                       </th>
                       <th>
-                        <button class="btn btn-ghost btn-xs" type="button">
+                        <button class="btn btn-ghost btn-xs" type="button" onClick$={async () => {
+                          state.token = localStorage.getItem("token") || "";
+                          await fetch("http://127.0.0.1:5000/api/v1/products/deleteByName/" + item.name,
+                          {
+                            method: "DELETE",
+                            headers: { "Content-Type": "application/json", "authorization": 'Bearer ' + state.token },
+                          });
+                         
+                        }}>
                           delete
                         </button>
                       </th>
