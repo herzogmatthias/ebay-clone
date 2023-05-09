@@ -87,9 +87,8 @@ export default component$(() => {
                   Sign in
                 </button>
                 <p
-                  class={`text-base text-${
-                    state.status != 200 ? "red" : "green"
-                  }-500 dark:text-white`}
+                  class={`text-base dark:text-white`}
+                  style={{ color: state.status != 200 ? "red" : "green" }}
                 >
                   {state.message}
                 </p>

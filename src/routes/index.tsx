@@ -19,25 +19,28 @@ export default component$(() => {
 
   useVisibleTask$(async () => {
     state.token = localStorage.getItem("token") || "";
-    const response = await fetch(
-      "http://127.0.0.1:5000/api/v1/products/getAll",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: "Bearer " + state.token,
-        },
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:5000/api/v1/products/getAll",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: "Bearer " + state.token,
+          },
+        }
+      );
+      state.status = response.status;
+      const data = await response.json();
+      if (response.status === 200) {
+        state.message = "Data available";
+        state.products = data;
+      } else {
+        state.message = data.message;
       }
-    );
-    state.status = response.status;
-    const data = await response.json();
-    if (response.status === 200) {
-      state.message = "Data available";
-      state.products = data;
-    } else {
-      state.message = data.message;
+    } catch (error) {
+      console.log(error);
     }
-    console.log(data.name);
   });
 
   const deleteProduct = $(async (name: string, email?: string) => {
