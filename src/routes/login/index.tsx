@@ -21,6 +21,7 @@ export default component$(() => {
     if (response.status === 200) {
       state.message = "Login Successful";
       localStorage.setItem("token", data.token);
+      localStorage.setItem("email", state.email);
       window.dispatchEvent(new Event("storage"));
       nav("/");
     } else {

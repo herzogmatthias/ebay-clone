@@ -67,13 +67,17 @@ export const getProductByName = async (
 
 export const deleteProductByName = async (name: string, email: string) => {
   const users = await UserModel.find();
+  let foundSomething = false;
   users.forEach((user) => {
     user.bids = user.bids.filter((bid) => bid.productName !== name);
     if (user.email === email) {
-      console.log("here");
+      foundSomething = true;
       user.products = user.products.filter((product) => product.name !== name);
     }
   });
+  if (!foundSomething) {
+    throw new Error("Can't delete other user's product");
+  }
   for (const user of users) {
     console.log(user.products);
     await user.save();
@@ -129,10 +133,8 @@ export const getAllBidsForProduct = async (
   supplierEmail: string,
   productName: string
 ) => {
-  console.log(supplierEmail, productName);
   const bids = await getAllBids();
-  console.log(bids);
-  console.log(bids.filter((bid) => bid.productName == productName));
+
   return bids
     .filter((bid) => {
       return (

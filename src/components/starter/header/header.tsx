@@ -6,14 +6,17 @@ export default component$(() => {
 
   const state = useStore({
     token: "",
+    email: "",
   });
 
   useVisibleTask$(() => {
     state.token = localStorage.getItem("token") || "";
+    state.email = localStorage.getItem("email") || "";
     console.log(localStorage.getItem("token"));
     window.addEventListener("storage", () => {
       console.log("Change to local storage!");
       state.token = localStorage.getItem("token") || "";
+      state.email = localStorage.getItem("email") || "";
     });
   });
 
@@ -22,6 +25,7 @@ export default component$(() => {
       nav("/login");
     } else {
       localStorage.removeItem("token");
+      localStorage.removeItem("email");
       location.reload();
     }
   });
@@ -45,6 +49,9 @@ export default component$(() => {
             <a href={state.token === "" ? "/" : "/addProduct"} target="_self">
               Add Product
             </a>
+          </li>
+          <li>
+            <div class="text-lg font-bold">{state.email}</div>
           </li>
         </ul>
       </div>

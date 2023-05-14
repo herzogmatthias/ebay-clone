@@ -7,6 +7,7 @@ export interface IIndexStore {
   products: IProduct[];
   message: string;
   status: number;
+  email: string;
 }
 
 export default component$(() => {
@@ -15,10 +16,12 @@ export default component$(() => {
     products: [],
     message: "",
     status: 200,
+    email: "",
   });
 
   useVisibleTask$(async () => {
     state.token = localStorage.getItem("token") || "";
+    state.email = localStorage.getItem("email") || "";
     try {
       const response = await fetch(
         "http://127.0.0.1:5000/api/v1/products/getAll",
@@ -120,7 +123,9 @@ export default component$(() => {
                       </th>
                       <th>
                         <button
-                          class="btn btn-ghost btn-xs"
+                          class={`btn btn-ghost btn-xs ${
+                            item.email !== state.email ? "hidden" : ""
+                          }`}
                           type="button"
                           onClick$={() => deleteProduct(item.name, item.email)}
                         >
